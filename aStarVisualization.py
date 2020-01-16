@@ -265,7 +265,7 @@ def solve(grid,showSteps=True):
 
             grid.display(win)
             pg.display.flip()
-            #clock.tick(60)
+            #clock.tick(20)
 
         if abreak:
             break
