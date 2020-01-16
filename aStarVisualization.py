@@ -226,10 +226,10 @@ def solve(grid,showSteps=True):
     noCount = 0.
     s = time.time()
     
-    while(True):
+    while True:
 
         # Actual algorithm ----------- #
-        if len(openList.items) == 0:
+        if not openList.items:
             print("NoPathException")
             return board
 
@@ -344,7 +344,7 @@ def main(win):
     solving = True
     editing = False
     moving = False
-    while(solving):
+    while solving:
 
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
