@@ -198,7 +198,7 @@ class Grid:
 size = 0
 count = 0
 while not 20 <= size <= 100:
-    print("Enter size of each cube (between 20 and 100), 30 is recommended")
+    print("Enter size of each cube (between 20 and 100), 20 is recommended")
     try:
         size = int(input())
     except:
