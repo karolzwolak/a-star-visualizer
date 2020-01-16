@@ -197,8 +197,8 @@ class Grid:
 
 size = 0
 count = 0
-while not 20 <= size <= 100:
-    print("Enter size of each cube (between 20 and 100), 20 is recommended")
+while not 10 <= size <= 50:
+    print("Enter size of each cube (between 10 and 50), 20 is recommended")
     try:
         size = int(input())
     except:
@@ -209,9 +209,7 @@ startNode = grid.get_node(1)
 targetNode = grid.get_node(2)
 
 
-def solve(grid,showSteps=True,returnOnlyTime=False):
-    if not returnOnlyTime:
-        actualTime = solve(grid,showSteps=False,returnOnlyTime=True)
+def solve(grid,showSteps=True):
     paused = False
     operations = 0
     av = (0,3,4,5)
@@ -222,15 +220,16 @@ def solve(grid,showSteps=True,returnOnlyTime=False):
     startNode = Node(startPos=grid.startNode,targetPos=grid.targetNode)
     openList.items.append(startNode)
     abreak = False
-    s = time.time()
     start = grid.startNode
     end = grid.targetNode
+
+    noCount = 0.
+    s = time.time()
+    
     while(True):
 
         # Actual algorithm ----------- #
         if len(openList.items) == 0:
-            if returnOnlyTime:
-                return -1
             print("NoPathException")
             return board
 
@@ -241,6 +240,7 @@ def solve(grid,showSteps=True,returnOnlyTime=False):
         openList.items.pop(n)
         closedList.items.append(curr)
         neighbors = curr.getNeighbors(board)
+
         if curr.pos == end:
             break
         for neighbor in neighbors:
@@ -260,8 +260,10 @@ def solve(grid,showSteps=True,returnOnlyTime=False):
                 openList.items.append(neighbor)
 
         # End of actual algorithm ----------- #
+        if showSteps:
 
-        if showSteps and not returnOnlyTime:
+            startNoCount = time.time()
+
             for node in closedList.items:
                 y,x = node.pos
                 if (y,x) != start:
@@ -298,9 +300,13 @@ def solve(grid,showSteps=True,returnOnlyTime=False):
             pg.display.flip()
             #clock.tick(60)
 
+            noCount += time.time() - startNoCount
+
         if abreak:
             break
-        
+
+    actualTime = time.time() - s - noCount
+
     # Extracting path ------------ #    
     # path is reversed #
     path = NodeList()
@@ -319,24 +325,17 @@ def solve(grid,showSteps=True,returnOnlyTime=False):
     elapsedTime = time.time()-s
 
 
-    if showSteps and not returnOnlyTime:
-        print(actualTime)
-        if actualTime >= 0:
-            print("found path of length",length,"time: ",actualTime,"s")
-        else:
-            print("Error: no path")
+    if showSteps:
+        print("found path of length",length,"time: ",actualTime,"s")
         
     path.items = reversed(path.items)
 
-    if not returnOnlyTime:
-        for elem in path.items:
-            clock.tick(60)
-            y, x = elem.pos
-            board[y][x] = 3
-            grid.display(win)
-            pg.display.flip()
-    else:
-        return elapsedTime
+    for elem in path.items:
+        clock.tick(60)
+        y, x = elem.pos
+        board[y][x] = 3
+        grid.display(win)
+        pg.display.flip()
 
     return board
 
