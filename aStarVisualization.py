@@ -210,6 +210,7 @@ targetNode = grid.get_node(2)
 
 
 def solve(grid,showSteps=True):
+    paused = False
     operations = 0
     av = (0,3,4,5)
     clock = pg.time.Clock()
@@ -262,14 +263,31 @@ def solve(grid,showSteps=True):
                 y,x = node.pos
                 if (y,x) != start:
                     grid.board[y][x] = 5
-                    
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     return board
-                elif event.type == pg.KEYDOWN: 
-                    if event.key == pg.K_SPACE or event.key == pg.K_ESCAPE:
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_ESCAPE:
                         return board
-                    
+                    if event.key == pg.K_SPACE:
+                        paused = True
+                        pg.event.clear()
+                        break
+
+            while paused:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        return board
+                    elif event.type == pg.KEYDOWN:
+                        if event.key == pg.K_SPACE:
+                            paused = False
+                            break
+                        elif event.key == pg.K_ESCAPE:
+                            return board
+
+                        
+
             grid.display(win)
             pg.display.flip()
             #clock.tick(60)
