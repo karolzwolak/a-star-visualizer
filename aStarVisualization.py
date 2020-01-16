@@ -209,7 +209,9 @@ startNode = grid.get_node(1)
 targetNode = grid.get_node(2)
 
 
-def solve(grid,showSteps=True):
+def solve(grid,showSteps=True,returnOnlyTime=False):
+    if not returnOnlyTime:
+        actualTime = solve(grid,showSteps=False,returnOnlyTime=True)
     paused = False
     operations = 0
     av = (0,3,4,5)
@@ -224,10 +226,14 @@ def solve(grid,showSteps=True):
     start = grid.startNode
     end = grid.targetNode
     while(True):
+
+        # Actual algorithm ----------- #
         if len(openList.items) == 0:
-            print("no path")
-            time.sleep(1)
+            if returnOnlyTime:
+                return -1
+            print("NoPathException")
             return board
+
         neighbors = NodeList()
         n = openList.getMin()
 
@@ -236,7 +242,6 @@ def solve(grid,showSteps=True):
         closedList.items.append(curr)
         neighbors = curr.getNeighbors(board)
         if curr.pos == end:
-            print("done")
             break
         for neighbor in neighbors:
             if neighbor.pos == end:
@@ -249,11 +254,14 @@ def solve(grid,showSteps=True):
                 openList.items.append(neighbor)
             if index2 >= 0 and closedList.items[index2].cost > neighbor.cost:
                 closedList.items.pop(index2)
+                # adding this neighbor to openlist isnt necessary, but it might turn out to be shortest path #
                 openList.items.append(neighbor)
             if index1 == -1 and index2 == -1:
                 openList.items.append(neighbor)
 
-        if showSteps:
+        # End of actual algorithm ----------- #
+
+        if showSteps and not returnOnlyTime:
             for node in closedList.items:
                 y,x = node.pos
                 if (y,x) != start:
@@ -286,30 +294,50 @@ def solve(grid,showSteps=True):
                         elif event.key == pg.K_ESCAPE:
                             return board
 
-                        
-
             grid.display(win)
             pg.display.flip()
             #clock.tick(60)
 
         if abreak:
             break
-    
-    print("time: ",time.time()-s)
+        
+    # Extracting path ------------ #    
+    # path is reversed #
     path = NodeList()
+    length = 0
     curr = closedList.items[-1]
+
     while curr.pos != start:
+        y,x = curr.pos
         if board[y][x] in av and (y,x) != start:
             path.items.append(curr)
+            length += curr.g_cost
         curr = curr.parent
+    
+    length = round(length,3)
+
+    elapsedTime = time.time()-s
+
+
+    if showSteps and not returnOnlyTime:
+        print(actualTime)
+        if actualTime >= 0:
+            print("found path of length",length,"time: ",actualTime,"s")
+        else:
+            print("Error: no path")
         
     path.items = reversed(path.items)
-    for elem in path.items:
-        clock.tick(60)
-        y, x = elem.pos
-        board[y][x] = 3
-        grid.display(win)
-        pg.display.flip()
+
+    if not returnOnlyTime:
+        for elem in path.items:
+            clock.tick(60)
+            y, x = elem.pos
+            board[y][x] = 3
+            grid.display(win)
+            pg.display.flip()
+    else:
+        return elapsedTime
+
     return board
 
 def main(win):
@@ -318,6 +346,7 @@ def main(win):
     editing = False
     moving = False
     while(solving):
+
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -374,6 +403,7 @@ def main(win):
                 elif event.key == pg.K_ESCAPE:
                     pg.quit()
                     return
+
             elif event.type == pg.QUIT:
                 pg.quit()
                 return
