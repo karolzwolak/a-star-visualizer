@@ -262,10 +262,17 @@ def solve(grid,showSteps=True):
                 y,x = node.pos
                 if (y,x) != start:
                     grid.board[y][x] = 5
-
+                    
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    return board
+                elif event.type == pg.KEYDOWN: 
+                    if event.key == pg.K_SPACE or event.key == pg.K_ESCAPE:
+                        return board
+                    
             grid.display(win)
             pg.display.flip()
-            #clock.tick(20)
+            #clock.tick(60)
 
         if abreak:
             break
