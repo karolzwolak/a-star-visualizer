@@ -5,7 +5,7 @@ W_WIDTH, W_HEIGHT = 1200,900
 
 win = pg.display.set_mode((W_WIDTH,W_HEIGHT))
 
-pg.display.set_caption("pathfinding visualization. mouse-click to draw, c to clear, space to start")
+pg.display.set_caption("pathfinding visualization. mouse-click to draw, c to clear, space to start/pause")
 
 black = (0,0,0)
 white = (255,255,255)
