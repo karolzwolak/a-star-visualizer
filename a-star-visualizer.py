@@ -1,4 +1,4 @@
-# from # https://github.com/DeathEyeXD/PythonProjects/blob/master/aStarVisualization.py
+# Author Karol Zwolak
 import pygame as pg
 import time
 W_WIDTH, W_HEIGHT = 1200, 900
@@ -375,7 +375,7 @@ def solve(win, grid, show_steps=True):
 def get_size_from_user():
     size = 0
     while not 10 <= size <= 50:
-        print("Enter size of each cube (between 10 and 50), 20 is default")
+        print("Enter size of cells in grid (between 10 and 50)\n press enter to choose default value of 20")
         try:
             inp = input()
             size = int(inp)
