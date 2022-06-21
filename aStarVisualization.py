@@ -3,10 +3,6 @@ import pygame as pg
 import time
 W_WIDTH, W_HEIGHT = 1200,900
 
-win = pg.display.set_mode((W_WIDTH,W_HEIGHT))
-
-pg.display.set_caption("pathfinding visualization. mouse-click to draw, c to clear, space to start/pause")
-
 black = (0,0,0)
 white = (255,255,255)
 green = (0,255,0)
@@ -140,6 +136,13 @@ class Grid:
         self.board[-1][-1] = 2
         self.startNode = self.get_node(1)
         self.targetNode = self.get_node(2)
+        
+    def switch(self):
+        self.board[self.startNode[0]][self.startNode[1]] = 2
+        self.board[self.targetNode[0]][self.targetNode[1]] = 1
+        self.startNode = self.get_node(1)
+        self.targetNode = self.get_node(2)
+        return (self.startNode,self.targetNode)
     
     def get_node(self,node):
         for i in range(len(self.board)):
@@ -195,22 +198,11 @@ class Grid:
                 self.board[toPos[0]][toPos[1]] = node
                 self.startNode = self.get_node(1)
                 self.targetNode = self.get_node(2)
-
-size = 0
-count = 0
-while not 10 <= size <= 50:
-    print("Enter size of each cube (between 10 and 50), 20 is recommended")
-    try:
-        size = int(input())
-    except:
-        print("Not a valid number!")
-
-grid = Grid(size)
-startNode = grid.get_node(1)
-targetNode = grid.get_node(2)
+                
 
 
-def solve(grid,showSteps=True):
+
+def solve(win, grid,showSteps=True):
     paused = False
     operations = 0
     av = (0,3,4,5)
@@ -283,6 +275,7 @@ def solve(grid,showSteps=True):
                         return board
                     if event.key == pg.K_SPACE:
                         paused = True
+                        grid.clear(walls=False)
                         pg.event.clear()
                         break
 
@@ -339,9 +332,41 @@ def solve(grid,showSteps=True):
         pg.display.flip()
 
     return board
+    
+def get_size_from_user():
+    size = 0
+    count = 0
+    while not 10 <= size <= 50:
+        print("Enter size of each cube (between 10 and 50), 20 is default")
+        try:
+            inp = input()
+            size = int(inp)
+        except:
+            if inp == "":
+                size = 20
+                break
+            print("Not a valid number!")
+    return size
+    
+def init():
 
-def main(win):
+    win = pg.display.set_mode((W_WIDTH,W_HEIGHT))
+
+    pg.display.set_caption("A* visualization. mouse-click to draw, c to clear board, space to start/pause, p to clear path, s to switch start and end nodes ")
+
+    size = get_size_from_user()
+    grid = Grid(size)
+    
+    startNode = grid.get_node(1)
+    targetNode = grid.get_node(2)
+    
+    return win, grid, startNode, targetNode
+
+def main():
     global startNode, targetNode
+    
+    win, grid ,startNode, targetNode = init()
+    
     solving = True
     editing = False
     moving = False
@@ -396,9 +421,11 @@ def main(win):
                     grid.clear()
                 elif event.key == pg.K_SPACE:
                     grid.clear(walls=False)
-                    grid.set(solve(grid))
+                    grid.set(solve(win, grid))
                     grid.display(win)
                     pg.event.clear()
+                elif event.key == pg.K_s:
+                    startNode, targetNode = grid.switch()
 
                 elif event.key == pg.K_ESCAPE:
                     pg.quit()
@@ -414,4 +441,4 @@ def main(win):
         
 
 if __name__ == "__main__":
-    main(win)
+    main() 
